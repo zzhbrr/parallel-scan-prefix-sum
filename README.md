@@ -10,7 +10,7 @@
 
 项目包含以下代码：
 
-![image-20221217160808812](.\imgs\image-20221217160808812.png)
+![image-20221217160808812](imgs/image-20221217160808812.png)
 
 其中，`config.h`记录常量，如BlockSize等；`gpu_timer.h`将计时工具封装起来；`PerformanceTest`对四种方法进行性能测试；`Scan`是扫描算法的基类；`ScanCPU`实现CPU版本的扫描；`ScanDoubleBuffer`实现在GPU上使用double buffer方法的并行扫描；`ScanWorkEfficient`实现在GPU上使用work-efficient方法的并行扫描；`ScanWorkEfficient_BCA`对work-efficient方法的bank conflict问题进行优化。
 
@@ -82,7 +82,7 @@ void ScanCPU::getPrefixSum() {
 
 朴素的并行算法使用**倍增**的思想，设$s[i][j]$表示 $j-2^i$ 到 $j$ 区间的和，那么$s[i+1][j] = s[i][j-2^i]+s[i][j]$，时间复杂度为$O(nlog_2n)$。如下图所示：
 
-<img src="D:\学习工作\学习资料\大三上\并行计算\作业\大作业\final_project\并行计算课程报告.assets\image-20221217163651647.png" alt="image-20221217163651647" style="zoom: 67%;" />
+<img src=".\imgs\image-20221217163651647.png" alt="image-20221217163651647" style="zoom: 67%;" />
 
 但只这样不能用于并行求解，因为对一个元素的读写同时在进行。使用**double buffer**方法可以解决这个问题，double buffer类似于滚动数据的思想，每次读和写都在不同的buffer中进行，这样可以实现并行加速。但是只能求解一个Block规模的扫描问题，因为Block之间不能同步。
 
@@ -385,9 +385,9 @@ void scan_WorkEfficient_BCA_OneBlock(int* indata, int* outdata_prefixSumPerBlock
 
 输出如下：
 
-![启用O2优化实验结果-1](.\imgs\image-20221219212241807.png)
+![启用O2优化实验结果-1](imgs/image-20221219212241807.png)
 
-![启用O2优化实验结果-2](.\imgs\image-20221219212252348.png)
+![启用O2优化实验结果-2](imgs/image-20221219212252348.png)
 
 每一行第一个时间代表算上设备间数据拷贝的总时间，第二个时间是刨去设备间拷贝的时间。
 
@@ -404,7 +404,7 @@ void scan_WorkEfficient_BCA_OneBlock(int* indata, int* outdata_prefixSumPerBlock
 
 下面观察nvprof给出的详细信息：
 
-![image-20221219212305854](.\imgs\image-20221219212305854.png)
+![image-20221219212305854](imgs/image-20221219212305854.png)
 
 对数据进行处理得到每次计算前缀和过程中各kernel的运行时间：
 
@@ -428,15 +428,15 @@ void scan_WorkEfficient_BCA_OneBlock(int* indata, int* outdata_prefixSumPerBlock
 
 `./scan_test 12312312`
 
-![image-20221219220116860](.\imgs\image-20221219220116860.png)
+![image-20221219220116860](imgs/image-20221219220116860.png)
 
 `./scan_test 123123`
 
-![image-20221219220213172](.\imgs\image-20221219220213172.png)
+![image-20221219220213172](imgs/image-20221219220213172.png)
 
 `./scan_test 12312`
 
-![image-20221219220232930](.\imgs\image-20221219220232930.png)
+![image-20221219220232930](imgs/image-20221219220232930.png)
 
 关闭O2优化情况下，GPU所用时间约$N>10^6$时比CPU串行所用时间更短。
 
@@ -444,11 +444,11 @@ void scan_WorkEfficient_BCA_OneBlock(int* indata, int* outdata_prefixSumPerBlock
 
 `./scan_test 12312312`
 
-![image-20221219220416044](.\imgs\image-20221219220416044.png)
+![image-20221219220416044](imgs/image-20221219220416044.png)
 
 `./scan_test 12312`
 
-![image-20221219220433375](.\imgs\image-20221219220433375.png)
+![image-20221219220433375](imgs/image-20221219220433375.png)
 
 开启O2优化的情况下，若包含设备间数据拷贝，则GPU所用时间将一直大于CPU所用时间。
 
@@ -458,26 +458,26 @@ void scan_WorkEfficient_BCA_OneBlock(int* indata, int* outdata_prefixSumPerBlock
 
 BLOCKSIZE=1024：
 
-![image-20221219220631720](.\imgs\image-20221219220631720.png)
+![image-20221219220631720](imgs/image-20221219220631720.png)
 
 BLOCKSIZE=512：
 
-![image-20221219220820386](.\imgs\image-20221219220820386.png)
+![image-20221219220820386](imgs/image-20221219220820386.png)
 
 BLOCKSIZE=256：
 
-![image-20221219220911214](.\imgs\image-20221219220911214.png)
+![image-20221219220911214](imgs/image-20221219220911214.png)
 
 BLOCKSIZE=128：
 
-![image-20221219221007794](.\imgs\image-20221219221007794.png)
+![image-20221219221007794](imgs/image-20221219221007794.png)
 
 BLOCKSIZE=64：
 
-![image-20221219221102620](.\imgs\image-20221219221102620.png)
+![image-20221219221102620](imgs/image-20221219221102620.png)
 
 BLOCKSIZE=32：
 
-![image-20221219221148527](.\imgs\image-20221219221148527.png)
+![image-20221219221148527](imgs/image-20221219221148527.png)
 
 当BLOCKSIZE过大时，SM中Block数量有限；当BLOCKSIZE过小时无法充分利用所有线程；当BLOCKSIZE在512时，并行处理性能最高。
